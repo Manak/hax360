@@ -1,33 +1,45 @@
-var DEVMODE = true;
-
+var DEVMODE = false;
 
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
+var multer = require('multer');
+
+
+
+var uploadManager = require('./routes/uploadManager')
+var productViewer = require('./routes/productViewer')
+
+
 
 var app = express();
+
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
 
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(multer({dest:'./tmp/'}))
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-app.use('/', routes);
-app.use('/users', users);
 
+/*Routes*/
+
+
+app.use('/360/', productViewer)
+
+app.use('/upload', uploadManager);
 
 
 
@@ -38,10 +50,11 @@ app.use(function(req, res, next) {
     next(err);
 });
 
-// error handlers
 
-// development error handler
-// will print stacktrace
+
+
+
+
 if (DEVMODE == true) {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
@@ -60,4 +73,4 @@ if (DEVMODE == true) {
     });
 }
 
-module.exports(app);
+module.exports = app;
